@@ -1,7 +1,6 @@
 
 #include "crash3d.h"
 #include <cstdlib>
-#include <unistd.h>
 
 Crash3d::Crash3d()
     : mRoot(0),

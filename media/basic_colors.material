@@ -1,0 +1,90 @@
+material Template/White
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 1 1 1 1
+         diffuse 1 1 1 1
+         emissive 0 0 0 1
+      }
+   }
+}
+
+material Template/Red
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 1 0 0 1
+         diffuse 1 0 0 1
+         emissive 0 0 0 1
+      }
+   }
+}
+ 
+ 
+material Template/Blue
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 0 0 1 1
+         diffuse 0 0 1 1
+         emissive 0 0 0 1
+      }
+   }
+}
+ 
+material Template/Green
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 0 1 0 1
+         diffuse 0 1 0 1
+         emissive 0 0 0 1
+      }
+   }
+}
+
+material Template/Yellow
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 1 1 0 1
+         diffuse 1 1 0 1
+         emissive 0 0 0 1
+      }
+   }
+}
+
+material Template/Cyan
+{
+   technique
+   {
+      pass
+      {
+         lighting on
+ 
+         ambient 0 1 1 1
+         diffuse 0 1 1 1
+         emissive 0 0 0 1
+      }
+   }
+}

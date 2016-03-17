@@ -1,5 +1,6 @@
 
 #include "crash3d.h"
+#include "materials.h"
 #include <cstdlib>
 
 Crash3d::Crash3d()
@@ -25,7 +26,9 @@ Crash3d::Crash3d()
 }
 
 Crash3d::~Crash3d()
-{    
+{   	
+	//DestroyMaterials();
+
     if(mRaySceneQuery)
         mSceneMgr->destroyQuery(mRaySceneQuery);
     if(mGrid)
@@ -48,7 +51,7 @@ bool Crash3d::go()
     mPluginsCfg = "./plugins.cfg";
 
     mRoot = new Ogre::Root(mPluginsCfg);
-    mLog = Ogre::LogManager::getSingletonPtr();
+    mLog = Ogre::LogManager::getSingletonPtr();	
 
     Ogre::ConfigFile cf;
     cf.load(mResourcesCfg);    
@@ -73,17 +76,20 @@ bool Crash3d::go()
         mWindow = mRoot->initialise(true, "Crash3d");
     else return false;
 
+	CreateMaterials();
+
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     mOverlaySystem = new Ogre::OverlaySystem();
     mSceneMgr->addRenderQueueListener(mOverlaySystem);
 
-    mCamera = mSceneMgr->createCamera("SpectatorCamera");    
-    mCamera->setPosition(Ogre::Vector3(0, 500, 500));    
-    mCamera->lookAt(Ogre::Vector3(0, 0, 0));
-    mCamera->setNearClipDistance(5);
+    mCamera = mSceneMgr->createCamera("SpectatorCamera");            
     mCameraMan = new OgreBites::SdkCameraMan(mCamera);
-    mCameraMan->setStyle(OgreBites::CS_ORBIT);
+    mCameraMan->setStyle(OgreBites::CS_ORBIT);	
+
+	mCamera->setNearClipDistance(200);
+	mCamera->setPosition(Ogre::Vector3(0, 5000, 15000));    
+    mCamera->lookAt(Ogre::Vector3(0, 0, 0));
 
     Ogre::Viewport* vp = mWindow->addViewport(mCamera);
     vp->setBackgroundColour(Ogre::ColourValue(0,0.2,0.4));
@@ -92,7 +98,7 @@ bool Crash3d::go()
 
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);    
 
-    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();	
 
     for(int i=0; i<30; i++)
     {
@@ -101,15 +107,15 @@ bool Crash3d::go()
         Ogre::Entity* sphere = mSceneMgr->createEntity(name.str(), "sphere.mesh");
         Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         sphereNode->attachObject(sphere);
-        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);
+        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		
+		sphere->setMaterialName("BaseWhiteAlphaBlended");
     }
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
 
     Ogre::Light* l = mSceneMgr->createLight("MainLight");
     l->setPosition(2000,18000,5000);
-
-    //Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+    
     mLog->logMessage("*** Initializing OIS ***");
     OIS::ParamList pl;
     size_t windowHnd = 0;
@@ -230,8 +236,10 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
             Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
             mDetailsPanel->setParamValue(0, "01012016_000000");
             mDetailsPanel->setParamValue(1, ent->getName());
-            /*
-            mDetailsPanel->setParamValue(2, ent->getName());
+			std::stringstream ss;
+			ss << mCamera->getPosition().x << " " << mCamera->getPosition().y << " " << mCamera->getPosition().z;
+			mDetailsPanel->setParamValue(2, ss.str());
+            /*            
             mDetailsPanel->setParamValue(3, ent->getName());
             mDetailsPanel->setParamValue(4, ent->getName());
             mDetailsPanel->setParamValue(5, ent->getName());
@@ -344,10 +352,24 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
         Ogre::SceneNode* node = getNodeHit(arg.state.X.abs, arg.state.Y.abs);
         if(node)
+		{
+			if(mSelectedNode)
+			{
+				Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
+				ent->setMaterialName("BaseWhiteAlphaBlended");
+			}
             mSelectedNode = node;
+			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
+			ent->setMaterialName("green_material");
+		}
     }
     else if(id == OIS::MB_Right)
     {
+		if(mSelectedNode)
+		{
+			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
+			ent->setMaterialName("BaseWhiteAlphaBlended");
+		}
         mSelectedNode = 0;
     }
 

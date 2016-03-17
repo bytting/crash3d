@@ -86,11 +86,13 @@ copy "$(ProjectDir)resources.cfg" "$(TargetDir)resources.cfg"</Command>
   <ItemGroup>
     <ClInclude Include="crash3d.h" />
     <ClInclude Include="grid.h" />
+    <ClInclude Include="materials.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="crash3d.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="materials.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

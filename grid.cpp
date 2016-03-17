@@ -20,21 +20,7 @@ OgreGrid::OgreGrid(SceneManager *scene, String name):
     ofX = ofY = ofZ = 0;
     // Grid size
     xmin = zmin = -10;
-    xmax = zmax = 10;
-
-    Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create("red_material", "General");
-    mat->setReceiveShadows(false);
-    mat->getTechnique(0)->setLightingEnabled(true);
-    mat->getTechnique(0)->getPass(0)->setDiffuse(1, 0, 0, 0);
-    mat->getTechnique(0)->getPass(0)->setAmbient(1, 0, 0);
-    mat->getTechnique(0)->getPass(0)->setSelfIllumination(1, 0, 0);
-
-    mat = Ogre::MaterialManager::getSingleton().create("cyan_material", "General");
-    mat->setReceiveShadows(false);
-    mat->getTechnique(0)->setLightingEnabled(true);
-    mat->getTechnique(0)->getPass(0)->setDiffuse(0, 1, 1, 0);
-    mat->getTechnique(0)->getPass(0)->setAmbient(0, 1, 1);
-    mat->getTechnique(0)->getPass(0)->setSelfIllumination(0, 1, 1);
+    xmax = zmax = 10;    
 }
 
 OgreGrid::~OgreGrid()

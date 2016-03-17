@@ -11,13 +11,13 @@ private:
 
 public:
 
-    explicit OgreGrid(Ogre::SceneManager* scene, Ogre::String materialName = "BaseWhiteNoLighting");
+    explicit OgreGrid(Ogre::SceneManager* scene, Ogre::String materialName = "Template/Yellow");
     ~OgreGrid();
 
     Ogre::ManualObject *mGrid;
     Ogre::SceneNode *mOwnNode, *mAttachedNode;
     Ogre::SceneManager *mScene;
-    Ogre::String material;    
+    Ogre::String mMaterialName;
 
     // Cell sizes
     float csX, csY, csZ;

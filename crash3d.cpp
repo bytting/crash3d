@@ -89,7 +89,7 @@ bool Crash3d::go()
     mCamera->lookAt(Ogre::Vector3(0, 0, 0));
 
     Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-    vp->setBackgroundColour(Ogre::ColourValue(0,0.2,0.4));
+    vp->setBackgroundColour(Ogre::ColourValue(0.0078, 0.239, 0.231));
 
     mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
@@ -97,15 +97,36 @@ bool Crash3d::go()
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();	
 
-    for(int i=0; i<30; i++)
+    Ogre::Real r = 0, g = 1, b = 0;
+
+    for(int i=0; i<2; i++)
+    {
+        for(int j=0; j<10; j++)
+        {
+            Ogre::ColourValue col(r, g, b);
+            std::stringstream name;
+            name << "material" << j + i * 10;
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->create(name.str(), "General");
+            mat->getTechnique(0)->getPass(0)->setAmbient(col);
+            mat->getTechnique(0)->getPass(0)->setDiffuse(col);
+
+            if(i == 0)
+                r += 0.1;
+            else g -= 0.1;
+        }
+    }
+
+    for(int i=0; i<20; i++)
     {
         std::stringstream name;
         name << "sphere" << i;
         Ogre::Entity* sphere = mSceneMgr->createEntity(name.str(), "sphere.mesh");
         Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         sphereNode->attachObject(sphere);
-        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		
-        sphere->setMaterialName("Template/White");
+        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		        
+        std::stringstream mn;
+        mn << "material" << i;
+        sphere->setMaterialName(mn.str());
     }
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
@@ -173,7 +194,7 @@ bool Crash3d::go()
     mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
     mDetailsPanel->show();
 
-    mGrid = new OgreGrid(mSceneMgr, "Template/Yellow");
+    mGrid = new OgreGrid(mSceneMgr, "Template/Cyan");
     mGrid->attachToNode(mSceneMgr->getRootSceneNode());
     mGrid->setCellSize(1000);
     mGrid->update();
@@ -348,25 +369,11 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     if (id == OIS::MB_Left)
     {
         Ogre::SceneNode* node = getNodeHit(arg.state.X.abs, arg.state.Y.abs);
-        if(node)
-		{
-			if(mSelectedNode)
-			{
-				Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-                ent->setMaterialName("Template/White");
-			}
-            mSelectedNode = node;
-			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-            ent->setMaterialName("Template/Green");
-		}
+        if(node)	
+            mSelectedNode = node;        		
     }
     else if(id == OIS::MB_Right)
-    {
-		if(mSelectedNode)
-		{
-			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-            ent->setMaterialName("Template/White");
-		}
+    {        
         mSelectedNode = 0;
     }
 

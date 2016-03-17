@@ -52,8 +52,8 @@ material Template/Green
       {
          lighting on
  
-         ambient 0 1 0 1
-         diffuse 0 1 0 1
+         ambient 0 0.8 0 1
+         diffuse 0 0.8 0 1
          emissive 0 0 0 1
       }
    }
@@ -67,8 +67,8 @@ material Template/Yellow
       {
          lighting on
  
-         ambient 1 1 0 1
-         diffuse 1 1 0 1
+         ambient 0.8 0.8 0 1
+         diffuse 0.3 0.3 0.3 1
          emissive 0 0 0 1
       }
    }

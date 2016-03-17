@@ -1,6 +1,5 @@
 
 #include "crash3d.h"
-#include "materials.h"
 #include <cstdlib>
 
 Crash3d::Crash3d()
@@ -76,8 +75,6 @@ bool Crash3d::go()
         mWindow = mRoot->initialise(true, "Crash3d");
     else return false;
 
-	CreateMaterials();
-
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     mOverlaySystem = new Ogre::OverlaySystem();
@@ -108,7 +105,7 @@ bool Crash3d::go()
         Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         sphereNode->attachObject(sphere);
         sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		
-		sphere->setMaterialName("BaseWhiteAlphaBlended");
+        sphere->setMaterialName("Template/White");
     }
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
@@ -176,7 +173,7 @@ bool Crash3d::go()
     mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
     mDetailsPanel->show();
 
-    mGrid = new OgreGrid(mSceneMgr, "BaseWhiteAlphaBlended");
+    mGrid = new OgreGrid(mSceneMgr, "Template/Yellow");
     mGrid->attachToNode(mSceneMgr->getRootSceneNode());
     mGrid->setCellSize(1000);
     mGrid->update();
@@ -356,11 +353,11 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 			if(mSelectedNode)
 			{
 				Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-				ent->setMaterialName("BaseWhiteAlphaBlended");
+                ent->setMaterialName("Template/White");
 			}
             mSelectedNode = node;
 			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-			ent->setMaterialName("green_material");
+            ent->setMaterialName("Template/Green");
 		}
     }
     else if(id == OIS::MB_Right)
@@ -368,7 +365,7 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 		if(mSelectedNode)
 		{
 			Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-			ent->setMaterialName("BaseWhiteAlphaBlended");
+            ent->setMaterialName("Template/White");
 		}
         mSelectedNode = 0;
     }

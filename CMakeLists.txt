@@ -66,6 +66,7 @@ file(COPY
     ${CMAKE_SOURCE_DIR}/media/SdkTrays.zip
     ${CMAKE_SOURCE_DIR}/media/sphere.mesh
     ${CMAKE_SOURCE_DIR}/media/column.mesh
+    ${CMAKE_SOURCE_DIR}/media/basic_colors.material
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/media)
 
 install(TARGETS ${PROJECT_NAME}

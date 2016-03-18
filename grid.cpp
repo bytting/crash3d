@@ -1,8 +1,7 @@
 #include "grid.h"
 #include <Ogre.h>
-using namespace Ogre;
 
-OgreGrid::OgreGrid(SceneManager *scene, Ogre::String materialName):
+OgreGrid::OgreGrid(Ogre::SceneManager *scene, Ogre::String materialName):
     mScene(scene),
     mAttachedNode(0),
     mMaterialName(materialName)
@@ -31,7 +30,7 @@ OgreGrid::~OgreGrid()
     mScene->destroySceneNode(mOwnNode);
 }
 
-void OgreGrid::attachToNode(SceneNode *node)
+void OgreGrid::attachToNode(Ogre::SceneNode *node)
 {
     // If already attached, deattach it first
     if(mAttachedNode)
@@ -52,7 +51,7 @@ void OgreGrid::show()
 
 void OgreGrid::update()
 {
-    ManualObject* o = mGrid;
+    Ogre::ManualObject *o = mGrid;
 
     o->setRenderQueueGroup(drawQueue);
 
@@ -61,7 +60,7 @@ void OgreGrid::update()
     mOwnNode->setScale(csX, csY, csZ);
 
     o->clear();
-    o->begin(mMaterialName, RenderOperation::OT_LINE_LIST);
+    o->begin(mMaterialName, Ogre::RenderOperation::OT_LINE_LIST);
 
     // draw X lines
     for(int x = xmin; x <= xmax; ++x)
@@ -85,7 +84,7 @@ void OgreGrid::update()
 
     o->end();
 
-    o->begin("Template/Red", RenderOperation::OT_LINE_LIST);
+    o->begin("Template/Red", Ogre::RenderOperation::OT_LINE_LIST);
 
     // Draw half the center line with red color
     o->position(0, 0, 0);

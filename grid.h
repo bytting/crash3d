@@ -11,7 +11,7 @@ private:
 
 public:
 
-    explicit OgreGrid(Ogre::SceneManager* scene, Ogre::String materialName = "Template/Yellow");
+    explicit OgreGrid(Ogre::SceneManager* scene, Ogre::String materialName = "Template/Cyan");
     ~OgreGrid();
 
     Ogre::ManualObject *mGrid;

@@ -32,14 +32,15 @@ protected:
     Ogre::Root *mRoot;
     Ogre::LogManager *mLog;
     Ogre::Camera *mCamera;
-    Ogre::SceneManager* mSceneMgr;
-    Ogre::RenderWindow* mWindow;
+    Ogre::SceneManager *mSceneMgr;
+    Ogre::RenderWindow *mWindow;
+    Ogre::Viewport *mViewport;
     Ogre::String mResourcesCfg;
     Ogre::String mPluginsCfg;
     Ogre::OverlaySystem *mOverlaySystem;
     OgreGrid* mGrid;
     Ogre::RaySceneQuery *mRaySceneQuery;
-    Ogre::SceneNode* mSelectedNode;
+    Ogre::SceneNode *mSelectedNode;
 
     OgreBites::InputContext mInputContext;
     OgreBites::SdkTrayManager* mTrayMgr;

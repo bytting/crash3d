@@ -14,8 +14,7 @@ extern "C" {
 #else
     int main(int argc, char *argv[])
 #endif
-    {
-        // Create application object
+    {        
         Crash3d app;
 
         try

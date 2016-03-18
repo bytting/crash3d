@@ -7,6 +7,7 @@ Crash3d::Crash3d()
     mLog(0),
     mCamera(0),
     mSceneMgr(0),
+    mViewport(0),
     mWindow(0),
     mResourcesCfg(Ogre::StringUtil::BLANK),
     mPluginsCfg(Ogre::StringUtil::BLANK),
@@ -25,9 +26,7 @@ Crash3d::Crash3d()
 }
 
 Crash3d::~Crash3d()
-{   	
-	//DestroyMaterials();
-
+{
     if(mRaySceneQuery)
         mSceneMgr->destroyQuery(mRaySceneQuery);
     if(mGrid)
@@ -88,10 +87,10 @@ bool Crash3d::go()
 	mCamera->setPosition(Ogre::Vector3(0, 5000, 15000));    
     mCamera->lookAt(Ogre::Vector3(0, 0, 0));
 
-    Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-    vp->setBackgroundColour(Ogre::ColourValue(0.0078, 0.239, 0.231));
+    mViewport = mWindow->addViewport(mCamera);
+    mViewport->setBackgroundColour(Ogre::ColourValue(0.0078, 0.239, 0.231));
 
-    mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+    mCamera->setAspectRatio(Ogre::Real(mViewport->getActualWidth()) / Ogre::Real(mViewport->getActualHeight()));
 
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);    
 
@@ -131,7 +130,7 @@ bool Crash3d::go()
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
 
-    Ogre::Light* l = mSceneMgr->createLight("MainLight");
+    Ogre::Light *l = mSceneMgr->createLight("MainLight");
     l->setPosition(2000,18000,5000);
     
     mLog->logMessage("*** Initializing OIS ***");
@@ -154,7 +153,7 @@ bool Crash3d::go()
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 #endif
-    mInputManager = OIS::InputManager::createInputSystem( pl );
+    mInputManager = OIS::InputManager::createInputSystem(pl);
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
@@ -162,10 +161,9 @@ bool Crash3d::go()
     mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
 
-    //Set initial mouse clipping size
+    // Set initial mouse clipping size
     windowResized(mWindow);
 
-    //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
     mInputContext.mKeyboard = mKeyboard;
@@ -194,7 +192,7 @@ bool Crash3d::go()
     mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
     mDetailsPanel->show();
 
-    mGrid = new OgreGrid(mSceneMgr, "Template/Cyan");
+    mGrid = new OgreGrid(mSceneMgr);
     mGrid->attachToNode(mSceneMgr->getRootSceneNode());
     mGrid->setCellSize(1000);
     mGrid->update();
@@ -210,16 +208,14 @@ bool Crash3d::go()
 }
 
 Ogre::SceneNode* Crash3d::getNodeHit(int x, int y)
-{    
+{
+    Ogre::SceneNode *hit = 0;
     Ogre::Ray mouseRay = mCamera->getCameraToViewportRay(
-                x / float(mWindow->getViewport(0)->getActualWidth()),
-                y / float(mWindow->getViewport(0)->getActualHeight()));
-
+                x / Ogre::Real(mViewport->getActualWidth()),
+                y / Ogre::Real(mViewport->getActualHeight()));
     mRaySceneQuery->setRay(mouseRay);
-    Ogre::RaySceneQueryResult& result = mRaySceneQuery->execute();
+    Ogre::RaySceneQueryResult &result = mRaySceneQuery->execute();
     Ogre::RaySceneQueryResult::iterator it = result.begin();
-
-    Ogre::SceneNode* hit = 0;
     for(; it != result.end(); it++)
     {
         Ogre::String name = it->movable->getName();
@@ -234,11 +230,8 @@ Ogre::SceneNode* Crash3d::getNodeHit(int x, int y)
 
 bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
-    if(mWindow->isClosed())
-        return false;
-
-    if(mShutDown)
-        return false;
+    if(mShutDown || mWindow->isClosed())
+        return false;    
 
     // Need to capture/update each device
     mKeyboard->capture();

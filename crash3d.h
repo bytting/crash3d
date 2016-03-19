@@ -33,7 +33,10 @@
 
 #include <SdkTrays.h>
 #include <SdkCameraMan.h>
+#include <vector>
+#include <string>
 #include "grid.h"
+#include "session.h"
 
 class Crash3d : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener, OgreBites::SdkTrayListener
 {
@@ -41,7 +44,7 @@ public:
 
     Crash3d();
     virtual ~Crash3d();
-    bool go();
+    bool go(const std::vector<std::string> &args);
 
 protected:
 
@@ -85,6 +88,8 @@ protected:
     // Ogre::WindowEventListener
     virtual void windowResized(Ogre::RenderWindow* rw);
     virtual void windowClosed(Ogre::RenderWindow* rw);
+
+    Session *mSession;
 };
 
 #endif // _crash3d_h_

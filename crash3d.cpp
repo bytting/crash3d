@@ -36,7 +36,8 @@ Crash3d::Crash3d()
     mOverlaySystem(0),
     mGrid(0),
     mRaySceneQuery(0),
-    mSelectedNode(0)
+    mSelectedNode(0),
+    mSession(0)
 {
 }
 
@@ -52,13 +53,17 @@ Crash3d::~Crash3d()
         delete mCameraMan;
     if (mOverlaySystem)
         delete mOverlaySystem;
+    if(mSession)
+        delete mSession;
 
     Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
     windowClosed(mWindow);
-    delete mRoot;
+
+    if(mRoot)
+        delete mRoot;
 }
 
-bool Crash3d::go()
+bool Crash3d::go(const std::vector<std::string> &args)
 {    
     mResourcesCfg = "./resources.cfg";
     mPluginsCfg = "./plugins.cfg";
@@ -88,6 +93,17 @@ bool Crash3d::go()
     if(mRoot->restoreConfig() || mRoot->showConfigDialog())    
         mWindow = mRoot->initialise(true, "Crash3d");
     else return false;
+
+    // Load sessions
+    /*if(args.size() < 2)
+    {
+        mLog->logMessage("Missing arguments");
+        return false;
+    }*/
+
+    mSession = new Session();
+    //for(int i=1; i<args.size(); i++)
+        mSession->load("/home/drb/tmp/session/08032016_101708");
 
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 

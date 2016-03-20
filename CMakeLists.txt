@@ -48,7 +48,7 @@ include_directories(${Boost_INCLUDE_DIR})
 add_definitions(-DBOOST_ALL_NO_LIB)
 set(OGRE_LIBRARIES OgreOverlay ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
-set(SRCS ./crash3d.cpp ./grid.cpp ./spectrum.cpp ./session.cpp ./main.cpp)
+set(SRCS ./crash3d.cpp ./grid.cpp ./spectrum.cpp ./session.cpp ./conv_utils.cpp ./main.cpp)
 
 include_directories(${OIS_INCLUDE_DIRS} ${OGRE_INCLUDE_DIRS} ${OGRE_OVERLAY_INCLUDEPATH})
 

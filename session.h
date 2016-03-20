@@ -32,6 +32,8 @@ public:
 
     bool load(const std::string &session_path);
 
+    void clear();
+
     std::string name;
 
 private:

@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "spectrum.h"
+#include "conv_utils.h"
 #include "rapidjson/document.h"
 #include <fstream>
 
@@ -40,7 +41,12 @@ bool Spectrum::load(const std::string &filename)
     if(!doc.HasMember("command"))
         return false;
 
-    latitudeStart = 50.500500;
+    const rap::Value& args = doc["arguments"];
+    if(!args.IsObject())
+        return false;
+
+    latitudeStart = from_string<double>(args["latitude_start"].GetString());
+    latitudeEnd = from_string<double>(args["latitude_end"].GetString());
 
     return true;
 }

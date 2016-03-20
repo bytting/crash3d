@@ -23,8 +23,7 @@ Session::Session()
 
 Session::~Session()
 {
-    for(std::vector<Spectrum*>::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it) 
-        delete *it;    
+    clear();
 }
 
 const Spectrum* Session::getSpectrum(int idx) const
@@ -48,9 +47,12 @@ bool Session::load(const std::string &session_path)
 
     fs::directory_iterator end_iter;
     for(fs::directory_iterator di(p); di != end_iter; ++di)
-    {
-        fs::path fp = di->path();
+    {        
         if (!fs::is_regular_file(di->status()))
+            continue;
+
+        fs::path fp = di->path();
+        if(fp.extension() != ".json")
             continue;
 
         Spectrum *spec = new Spectrum();
@@ -59,4 +61,11 @@ bool Session::load(const std::string &session_path)
     }
 
     return true;
+}
+
+void Session::clear()
+{
+    for(std::vector<Spectrum*>::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it)
+        delete *it;
+    mSpecList.clear();
 }

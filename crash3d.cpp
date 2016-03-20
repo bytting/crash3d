@@ -15,7 +15,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "crash3d.h"
+#include "conv_utils.h"
 #include <cstdlib>
+#include <sstream>
+#include <iomanip>
 
 Crash3d::Crash3d()
     : mRoot(0),
@@ -139,10 +142,8 @@ bool Crash3d::go(const std::vector<std::string> &args)
     {
         for(int j=0; j<10; j++)
         {
-            Ogre::ColourValue col(r, g, b);
-            std::stringstream name;
-            name << "material" << j + i * 10;
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->create(name.str(), "General");
+            Ogre::ColourValue col(r, g, b);            
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->create("material " + to_string<int>(j + i * 10), "General");
             mat->getTechnique(0)->getPass(0)->setAmbient(col);
             mat->getTechnique(0)->getPass(0)->setDiffuse(col);
 
@@ -153,16 +154,12 @@ bool Crash3d::go(const std::vector<std::string> &args)
     }
 
     for(int i=0; i<20; i++)
-    {
-        std::stringstream name;
-        name << "sphere" << i;
-        Ogre::Entity* sphere = mSceneMgr->createEntity(name.str(), "sphere.mesh");
+    {        
+        Ogre::Entity* sphere = mSceneMgr->createEntity("spectrum " + to_string<int>(i), "sphere.mesh");
         Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         sphereNode->attachObject(sphere);
-        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		        
-        std::stringstream mn;
-        mn << "material" << i;
-        sphere->setMaterialName(mn.str());
+        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		                
+        sphere->setMaterialName("material " + to_string<int>(i));
     }
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
@@ -256,7 +253,7 @@ Ogre::SceneNode* Crash3d::getNodeHit(int x, int y)
     for(; it != result.end(); it++)
     {
         Ogre::String name = it->movable->getName();
-        if (name.find_first_of("sphere") == 0)
+        if (name.find_first_of("spectrum ") == 0)
         {
             hit = it->movable->getParentSceneNode();
             break;
@@ -282,15 +279,18 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
         if (mDetailsPanel->isVisible() && mSelectedNode)   // if details panel is visible, then update its contents
         {
             Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
-            mDetailsPanel->setParamValue(0, "01012016_000000");
+            mDetailsPanel->setParamValue(0, "01012016_000000");            
             mDetailsPanel->setParamValue(1, ent->getName());
 			std::stringstream ss;
 			ss << mCamera->getPosition().x << " " << mCamera->getPosition().y << " " << mCamera->getPosition().z;
 			mDetailsPanel->setParamValue(2, ss.str());
 
-            std::stringstream ss2;
-            ss2 << mSession->getSpectrum(0)->latitudeStart;
-            mDetailsPanel->setParamValue(3, ss2.str());
+            std::string entType = "";
+            int entIndex = 0;
+            std::stringstream sname(ent->getName());
+            sname >> entType >> entIndex;
+            mDetailsPanel->setParamValue(3, to_string<double>(mSession->getSpectrum(entIndex)->latitudeStart));
+
             /*                        
             mDetailsPanel->setParamValue(4, ent->getName());
             mDetailsPanel->setParamValue(5, ent->getName());
@@ -443,8 +443,8 @@ void Crash3d::windowClosed(Ogre::RenderWindow* rw)
     {
         if(mInputManager)
         {
-            mInputManager->destroyInputObject( mMouse );
-            mInputManager->destroyInputObject( mKeyboard );
+            mInputManager->destroyInputObject(mMouse);
+            mInputManager->destroyInputObject(mKeyboard);
 
             OIS::InputManager::destroyInputSystem(mInputManager);
             mInputManager = 0;

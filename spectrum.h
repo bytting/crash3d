@@ -26,7 +26,7 @@ public:
     Spectrum();
     ~Spectrum();
 
-    void load(const std::string &filename);
+    bool load(const std::string &filename);
 
     int sessionIndex;
     double latitudeStart, latitudeStartErr;

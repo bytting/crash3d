@@ -105,6 +105,10 @@ bool Crash3d::go(const std::vector<std::string> &args)
     //for(int i=1; i<args.size(); i++)
         mSession->load("/home/drb/tmp/session/08032016_101708");
 
+    std::stringstream ss;
+    ss << "session spectrums: " << mSession->getSpectrums().size();
+    mLog->logMessage(ss.str());
+
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     mOverlaySystem = new Ogre::OverlaySystem();
@@ -281,8 +285,11 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
 			std::stringstream ss;
 			ss << mCamera->getPosition().x << " " << mCamera->getPosition().y << " " << mCamera->getPosition().z;
 			mDetailsPanel->setParamValue(2, ss.str());
-            /*            
-            mDetailsPanel->setParamValue(3, ent->getName());
+
+            std::stringstream ss2;
+            ss2 << mSession->getSpectrum(0)->latitudeStart;
+            mDetailsPanel->setParamValue(3, ss2.str());
+            /*                        
             mDetailsPanel->setParamValue(4, ent->getName());
             mDetailsPanel->setParamValue(5, ent->getName());
             mDetailsPanel->setParamValue(6, ent->getName());
@@ -393,8 +400,8 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     if (id == OIS::MB_Left)
     {
         Ogre::SceneNode* node = getNodeHit(arg.state.X.abs, arg.state.Y.abs);
-        if(node)	
-            mSelectedNode = node;        		
+        if(node)
+            mSelectedNode = node;
     }
     else if(id == OIS::MB_Right)
     {        

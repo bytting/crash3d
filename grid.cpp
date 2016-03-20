@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 Code in this file is based on Peter's Grid System
 http://www.ogre3d.org/tikiwiki/tiki-index.php?page=Peter%27s+Grid+System
+Copyright (c) 2016 Dag Robole
 */
 
 #include "grid.h"

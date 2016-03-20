@@ -26,7 +26,7 @@ Spectrum::~Spectrum()
 
 }
 
-void Spectrum::load(const std::string &filename)
+bool Spectrum::load(const std::string &filename)
 {
-
+    return true;
 }

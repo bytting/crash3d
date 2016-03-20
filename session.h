@@ -17,10 +17,9 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include "spectrum.h"
 #include <vector>
 #include <string>
-
-class Spectrum;
 
 class Session
 {
@@ -28,7 +27,10 @@ public:
     Session();
     ~Session();
 
-    void load(const std::string &path);
+    const Spectrum* getSpectrum(int idx) const;
+    const std::vector<Spectrum*> getSpectrums() const;
+
+    bool load(const std::string &session_path);
 
     std::string name;
 

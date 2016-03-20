@@ -47,6 +47,10 @@ bool Spectrum::load(const std::string &filename)
 
     latitudeStart = from_string<double>(args["latitude_start"].GetString());
     latitudeEnd = from_string<double>(args["latitude_end"].GetString());
+    longitudeStart = from_string<double>(args["longitude_start"].GetString());
+    longitudeEnd = from_string<double>(args["longitude_end"].GetString());
+    altitudeStart = from_string<double>(args["altitude_start"].GetString());
+    altitudeEnd = from_string<double>(args["altitude_end"].GetString());
 
     return true;
 }

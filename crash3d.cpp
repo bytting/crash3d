@@ -281,21 +281,20 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
             Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
             mDetailsPanel->setParamValue(0, "01012016_000000");            
             mDetailsPanel->setParamValue(1, ent->getName());
-			std::stringstream ss;
-			ss << mCamera->getPosition().x << " " << mCamera->getPosition().y << " " << mCamera->getPosition().z;
-			mDetailsPanel->setParamValue(2, ss.str());
 
             std::string entType = "";
             int entIndex = 0;
             std::stringstream sname(ent->getName());
             sname >> entType >> entIndex;
-            mDetailsPanel->setParamValue(3, to_string<double>(mSession->getSpectrum(entIndex)->latitudeStart));
 
-            /*                        
-            mDetailsPanel->setParamValue(4, ent->getName());
-            mDetailsPanel->setParamValue(5, ent->getName());
-            mDetailsPanel->setParamValue(6, ent->getName());
-            mDetailsPanel->setParamValue(7, ent->getName());
+            mDetailsPanel->setParamValue(2, to_string<double>(mSession->getSpectrum(entIndex)->latitudeStart));
+            mDetailsPanel->setParamValue(3, to_string<double>(mSession->getSpectrum(entIndex)->latitudeEnd));
+            mDetailsPanel->setParamValue(4, to_string<double>(mSession->getSpectrum(entIndex)->longitudeStart));
+            mDetailsPanel->setParamValue(5, to_string<double>(mSession->getSpectrum(entIndex)->longitudeEnd));
+            mDetailsPanel->setParamValue(6, to_string<double>(mSession->getSpectrum(entIndex)->altitudeStart));
+            mDetailsPanel->setParamValue(7, to_string<double>(mSession->getSpectrum(entIndex)->altitudeEnd));
+
+            /*                                    
             mDetailsPanel->setParamValue(8, ent->getName());
             mDetailsPanel->setParamValue(9, ent->getName());
             mDetailsPanel->setParamValue(10, ent->getName());
@@ -304,7 +303,18 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
         }
         else
         {
+            mDetailsPanel->setParamValue(0, "");
             mDetailsPanel->setParamValue(1, "");
+            mDetailsPanel->setParamValue(2, "");
+            mDetailsPanel->setParamValue(3, "");
+            mDetailsPanel->setParamValue(4, "");
+            mDetailsPanel->setParamValue(5, "");
+            mDetailsPanel->setParamValue(6, "");
+            mDetailsPanel->setParamValue(7, "");
+            mDetailsPanel->setParamValue(8, "");
+            mDetailsPanel->setParamValue(9, "");
+            mDetailsPanel->setParamValue(10, "");
+            mDetailsPanel->setParamValue(11, "");
         }
     }
 

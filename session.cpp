@@ -15,24 +15,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "session.h"
-#include "rapidjson/document.h"
 #include <boost/filesystem.hpp>
-#include <fstream>
-
-using namespace boost::filesystem;
-using namespace rapidjson;
 
 Session::Session()
 {
-
 }
 
 Session::~Session()
 {
-    for(std::vector<Spectrum*>::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it)
-    {
-        delete *it;
-    }
+    for(std::vector<Spectrum*>::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it) 
+        delete *it;    
 }
 
 const Spectrum* Session::getSpectrum(int idx) const
@@ -47,32 +39,24 @@ const std::vector<Spectrum*> Session::getSpectrums() const
 
 bool Session::load(const std::string &session_path)
 {
-    path p (session_path);
+    namespace fs = boost::filesystem;
+
+    fs::path p(session_path);
     p.append("/json");
-    if(!exists(p) || !is_directory(p))
+    if(!fs::exists(p) || !fs::is_directory(p))
         return false;
 
-    Document doc;
-    directory_iterator end_iter;
-    for(directory_iterator di(p); di != end_iter; ++di)
+    fs::directory_iterator end_iter;
+    for(fs::directory_iterator di(p); di != end_iter; ++di)
     {
-        path fp = di->path();
-        if (!is_regular_file(di->status()))
-            continue;
-
-        std::ifstream fin(fp.c_str());
-        std::string line, json;
-        while(std::getline(fin, line))
-            json += line;
-
-        doc.Clear();
-        doc.Parse(json.c_str());
-        if(!doc.HasMember("command"))
+        fs::path fp = di->path();
+        if (!fs::is_regular_file(di->status()))
             continue;
 
         Spectrum *spec = new Spectrum();
-        spec->latitudeStart = 50.500500;
-        mSpecList.push_back(spec);
+        if(spec->load(fp.string()))
+            mSpecList.push_back(spec);
     }
+
     return true;
 }

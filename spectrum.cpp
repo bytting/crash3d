@@ -15,18 +15,32 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "spectrum.h"
+#include "rapidjson/document.h"
+#include <fstream>
 
 Spectrum::Spectrum()
 {
-
 }
 
 Spectrum::~Spectrum()
 {
-
 }
 
 bool Spectrum::load(const std::string &filename)
 {
+    namespace rap = rapidjson;
+
+    std::ifstream fin(filename.c_str());
+    std::string line, json;
+    while(std::getline(fin, line))
+        json += line;
+
+    rap::Document doc;
+    doc.Parse(json.c_str());
+    if(!doc.HasMember("command"))
+        return false;
+
+    latitudeStart = 50.500500;
+
     return true;
 }

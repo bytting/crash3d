@@ -103,7 +103,9 @@ bool Crash3d::go(const std::vector<std::string> &args)
 
     mSession = new Session();
     //for(int i=1; i<args.size(); i++)
-        mSession->load("/home/drb/tmp/session/08032016_101708");
+    mSession->load("/home/drb/tmp/session/08032016_101708");
+
+    mLog->logMessage("session spectrum count: " + mSession->getSpectrums().size());
 
     std::stringstream ss;
     ss << "session spectrums: " << mSession->getSpectrums().size();

@@ -280,19 +280,14 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
         {
             Ogre::Entity* ent = static_cast<Ogre::Entity*>(mSelectedNode->getAttachedObject(0));
             mDetailsPanel->setParamValue(0, "01012016_000000");            
-            mDetailsPanel->setParamValue(1, ent->getName());
-
-            std::string entType = "";
-            int entIndex = 0;
-            std::stringstream sname(ent->getName());
-            sname >> entType >> entIndex;
-
-            mDetailsPanel->setParamValue(2, to_string<double>(mSession->getSpectrum(entIndex)->latitudeStart));
-            mDetailsPanel->setParamValue(3, to_string<double>(mSession->getSpectrum(entIndex)->latitudeEnd));
-            mDetailsPanel->setParamValue(4, to_string<double>(mSession->getSpectrum(entIndex)->longitudeStart));
-            mDetailsPanel->setParamValue(5, to_string<double>(mSession->getSpectrum(entIndex)->longitudeEnd));
-            mDetailsPanel->setParamValue(6, to_string<double>(mSession->getSpectrum(entIndex)->altitudeStart));
-            mDetailsPanel->setParamValue(7, to_string<double>(mSession->getSpectrum(entIndex)->altitudeEnd));
+            mDetailsPanel->setParamValue(1, ent->getName());            
+            int idx = extract_id_from_name(ent->getName());
+            mDetailsPanel->setParamValue(2, to_string<double>(mSession->getSpectrum(idx)->latitudeStart));
+            mDetailsPanel->setParamValue(3, to_string<double>(mSession->getSpectrum(idx)->latitudeEnd));
+            mDetailsPanel->setParamValue(4, to_string<double>(mSession->getSpectrum(idx)->longitudeStart));
+            mDetailsPanel->setParamValue(5, to_string<double>(mSession->getSpectrum(idx)->longitudeEnd));
+            mDetailsPanel->setParamValue(6, to_string<double>(mSession->getSpectrum(idx)->altitudeStart));
+            mDetailsPanel->setParamValue(7, to_string<double>(mSession->getSpectrum(idx)->altitudeEnd));
 
             /*                                    
             mDetailsPanel->setParamValue(8, ent->getName());

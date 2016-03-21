@@ -23,4 +23,6 @@ T from_string(const std::string &str, int precision = 12)
     return val;
 }
 
+int extract_id_from_name(const std::string &name);
+
 #endif // CONV_UTILS_H

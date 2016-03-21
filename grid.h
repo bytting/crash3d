@@ -62,7 +62,7 @@ public:
     inline void setCellSize(float x, float y, float z) { csX = x; csY = y, csZ = z; }
     inline void setOffset(float x, float y, float z) { ofX = x, ofY = y, ofZ = z; }
 
-    void attachToNode(Ogre::SceneNode* node);
+    void attachToNode(Ogre::SceneNode* node);    
 
     //After setup, call this to regenerate the grid
     void update();

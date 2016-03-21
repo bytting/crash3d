@@ -31,7 +31,7 @@ const Spectrum* Session::getSpectrum(int idx) const
     return mSpecList[idx];
 }
 
-const std::vector<Spectrum*> Session::getSpectrums() const
+const SpecList Session::getSpectrums() const
 {
     return mSpecList;
 }
@@ -65,7 +65,7 @@ bool Session::load(const std::string &session_path)
 
 void Session::clear()
 {
-    for(std::vector<Spectrum*>::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it)
+    for(SpecList::iterator it = mSpecList.begin(); it != mSpecList.end(); ++it)
         delete *it;
     mSpecList.clear();
 }

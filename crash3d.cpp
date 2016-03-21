@@ -17,6 +17,7 @@
 #include "crash3d.h"
 #include "conv_utils.h"
 #include <cstdlib>
+#include <cmath>
 #include <sstream>
 #include <iomanip>
 
@@ -66,6 +67,22 @@ Crash3d::~Crash3d()
         delete mRoot;
 }
 
+Ogre::Vector3 convertToXYZ(double lat, double lon, double alt)
+{
+    static double R = 106356752.3142;
+    //static double R = 6356;
+
+    lat = lat * M_PI / 180.0;
+    lon = lon * M_PI / 180.0;
+
+    Ogre::Vector3 coord;
+    coord.x = R * std::cos(lat) * std::cos(lon);
+    coord.y = R * std::cos(lat) * std::sin(lon);
+    coord.z = R * std::sin(lat);
+
+    return coord;
+}
+
 bool Crash3d::go(const std::vector<std::string> &args)
 {    
     mResourcesCfg = "./resources.cfg";
@@ -88,8 +105,7 @@ bool Crash3d::go(const std::vector<std::string> &args)
         {
             typeName = i->first;
             archName = i->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                archName, typeName, secName);
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
         }
     }    
 
@@ -108,31 +124,12 @@ bool Crash3d::go(const std::vector<std::string> &args)
     //for(int i=1; i<args.size(); i++)
     mSession->load("/home/drb/tmp/session/08032016_101708");
 
-    mLog->logMessage("session spectrum count: " + mSession->getSpectrums().size());
-
-    std::stringstream ss;
-    ss << "session spectrums: " << mSession->getSpectrums().size();
-    mLog->logMessage(ss.str());
+    mLog->logMessage("session spectrum count: " + to_string<SpecList::size_type>(mSession->getSpectrums().size()));
 
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     mOverlaySystem = new Ogre::OverlaySystem();
     mSceneMgr->addRenderQueueListener(mOverlaySystem);
-
-    mCamera = mSceneMgr->createCamera("SpectatorCamera");            
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);
-    mCameraMan->setStyle(OgreBites::CS_ORBIT);	
-
-	mCamera->setNearClipDistance(200);
-	mCamera->setPosition(Ogre::Vector3(0, 5000, 15000));    
-    mCamera->lookAt(Ogre::Vector3(0, 0, 0));
-
-    mViewport = mWindow->addViewport(mCamera);
-    mViewport->setBackgroundColour(Ogre::ColourValue(0.0078, 0.239, 0.231));
-
-    mCamera->setAspectRatio(Ogre::Real(mViewport->getActualWidth()) / Ogre::Real(mViewport->getActualHeight()));
-
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);    
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();	
 
@@ -153,19 +150,75 @@ bool Crash3d::go(const std::vector<std::string> &args)
         }
     }
 
+    Ogre::SceneNode *nodeSaved;
+
+    double minX, minY, minZ;
+
+    for(int i=0; i<20; i++)
+    {
+        Ogre::Vector3 coord = convertToXYZ(
+                    mSession->getSpectrum(i)->latitudeStart,
+                    mSession->getSpectrum(i)->longitudeStart,
+                    mSession->getSpectrum(i)->altitudeStart);
+        if(i == 0)
+        {
+            minX = coord.x;
+            minY = coord.y;
+            minZ = coord.z;
+        }
+        else
+        {
+            if(coord.x < minX)
+                minX = coord.x;
+            if(coord.y < minY)
+                minY = coord.y;
+            if(coord.z < minZ)
+                minZ = coord.z;
+        }
+    }
+
     for(int i=0; i<20; i++)
     {        
         Ogre::Entity* sphere = mSceneMgr->createEntity("spectrum " + to_string<int>(i), "sphere.mesh");
         Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         sphereNode->attachObject(sphere);
-        sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);		                
+        Ogre::Vector3 coord = convertToXYZ(
+                    mSession->getSpectrum(i)->latitudeStart,
+                    mSession->getSpectrum(i)->longitudeStart,
+                    mSession->getSpectrum(i)->altitudeStart);
+        //sphereNode->setPosition(-5000 + std::rand() % 10000, std::rand() % 5000, -5000 + std::rand() % 10000);
+        sphereNode->setPosition(coord.x - minX, -(coord.z - minZ), coord.y - minY);
         sphere->setMaterialName("material " + to_string<int>(i));
+
+        mLog->logMessage("Coords: " + to_string<float>(coord.x) + " " + to_string<float>(coord.y) + " " + to_string<float>(coord.z));
+
+        sphereNode->scale(0.1, 0.1, 0.1);
+        nodeSaved = sphereNode;        
     }
+
+    mCamera = mSceneMgr->createCamera("SpectatorCamera");
+    mCamera->setNearClipDistance(5);
+    mCameraMan = new OgreBites::SdkCameraMan(mCamera);
+    mCameraMan->setStyle(OgreBites::CS_ORBIT);
+    mCameraMan->setTarget(nodeSaved);
+    mCamera->moveRelative(Ogre::Vector3(0, 0, 500));
+
+    //mCamera->setPosition(Ogre::Vector3(0, 5000, 15000));
+    //mCamera->lookAt(Ogre::Vector3(0, 0, 0));
+    //mCamera->setPosition(Ogre::Vector3(coordSaved.x, coordSaved.y, coordSaved.z + 1000));
+    //mCamera->lookAt(Ogre::Vector3(coordSaved.x, coordSaved.y, coordSaved.z));
+
+    mViewport = mWindow->addViewport(mCamera);
+    mViewport->setBackgroundColour(Ogre::ColourValue(0.0078, 0.239, 0.231));
+
+    mCamera->setAspectRatio(Ogre::Real(mViewport->getActualWidth()) / Ogre::Real(mViewport->getActualHeight()));
+
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
 
     Ogre::Light *l = mSceneMgr->createLight("MainLight");
-    l->setPosition(2000,18000,5000);
+    l->setPosition(nodeSaved->getPosition().x, nodeSaved->getPosition().y + 300, nodeSaved->getPosition().z);
     
     mLog->logMessage("*** Initializing OIS ***");
     OIS::ParamList pl;
@@ -189,8 +242,8 @@ bool Crash3d::go(const std::vector<std::string> &args)
 #endif
     mInputManager = OIS::InputManager::createInputSystem(pl);
 
-    mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
-    mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
+    mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true));
+    mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true));
 
     mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
@@ -228,7 +281,8 @@ bool Crash3d::go(const std::vector<std::string> &args)
 
     mGrid = new OgreGrid(mSceneMgr);
     mGrid->attachToNode(mSceneMgr->getRootSceneNode());
-    mGrid->setCellSize(1000);
+    mGrid->setCellSize(50);
+    mGrid->setOffset(nodeSaved->getPosition().x, nodeSaved->getPosition().y, nodeSaved->getPosition().z);
     mGrid->update();
     mGrid->show();
 
@@ -241,7 +295,7 @@ bool Crash3d::go(const std::vector<std::string> &args)
     return true;
 }
 
-Ogre::SceneNode* Crash3d::getNodeHit(int x, int y)
+Ogre::SceneNode* Crash3d::getFirstNodeFromRay(int x, int y)
 {
     Ogre::SceneNode *hit = 0;
     Ogre::Ray mouseRay = mCamera->getCameraToViewportRay(
@@ -262,7 +316,7 @@ Ogre::SceneNode* Crash3d::getNodeHit(int x, int y)
     return hit;
 }
 
-bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
+bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent &evt)
 {
     if(mShutDown || mWindow->isClosed())
         return false;    
@@ -316,7 +370,7 @@ bool Crash3d::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
-bool Crash3d::keyPressed( const OIS::KeyEvent &arg )
+bool Crash3d::keyPressed(const OIS::KeyEvent &arg)
 {
     if (mTrayMgr->isDialogVisible())
         return true;   // don't process any more keys if dialog is up
@@ -381,13 +435,13 @@ bool Crash3d::keyPressed( const OIS::KeyEvent &arg )
     return true;
 }
 
-bool Crash3d::keyReleased( const OIS::KeyEvent &arg )
+bool Crash3d::keyReleased(const OIS::KeyEvent &arg)
 {
     mCameraMan->injectKeyUp(arg);
     return true;
 }
 
-bool Crash3d::mouseMoved( const OIS::MouseEvent &arg )
+bool Crash3d::mouseMoved(const OIS::MouseEvent &arg)
 {
     if (mTrayMgr->injectMouseMove(arg))
         return true;
@@ -397,7 +451,7 @@ bool Crash3d::mouseMoved( const OIS::MouseEvent &arg )
     return true;
 }
 
-bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool Crash3d::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id)
 {
     if (mTrayMgr->injectMouseDown(arg, id))
         return true;
@@ -406,7 +460,7 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 
     if (id == OIS::MB_Left)
     {
-        Ogre::SceneNode* node = getNodeHit(arg.state.X.abs, arg.state.Y.abs);
+        Ogre::SceneNode *node = getFirstNodeFromRay(arg.state.X.abs, arg.state.Y.abs);
         if(node)
             mSelectedNode = node;
     }
@@ -418,7 +472,7 @@ bool Crash3d::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     return true;
 }
 
-bool Crash3d::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool Crash3d::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id)
 {
     if (mTrayMgr->injectMouseUp(arg, id))
         return true;
@@ -429,7 +483,7 @@ bool Crash3d::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 }
 
 // Adjust mouse clipping area
-void Crash3d::windowResized(Ogre::RenderWindow* rw)
+void Crash3d::windowResized(Ogre::RenderWindow *rw)
 {
     unsigned int width, height, depth;
     int left, top;
@@ -441,7 +495,7 @@ void Crash3d::windowResized(Ogre::RenderWindow* rw)
 }
 
 // Unattach OIS before window shutdown
-void Crash3d::windowClosed(Ogre::RenderWindow* rw)
+void Crash3d::windowClosed(Ogre::RenderWindow *rw)
 {
     // Only close for window that created OIS
     if(rw == mWindow)

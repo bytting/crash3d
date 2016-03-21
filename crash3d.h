@@ -38,7 +38,12 @@
 #include "grid.h"
 #include "session.h"
 
-class Crash3d : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener, OgreBites::SdkTrayListener
+class Crash3d :
+        public Ogre::FrameListener,
+        public Ogre::WindowEventListener,
+        public OIS::KeyListener,
+        public OIS::MouseListener,
+        public OgreBites::SdkTrayListener
 {
 public:    
 
@@ -62,32 +67,32 @@ protected:
     Ogre::SceneNode *mSelectedNode;
 
     OgreBites::InputContext mInputContext;
-    OgreBites::SdkTrayManager* mTrayMgr;
-    OgreBites::SdkCameraMan* mCameraMan;
-    OgreBites::ParamsPanel* mDetailsPanel;
+    OgreBites::SdkTrayManager *mTrayMgr;
+    OgreBites::SdkCameraMan *mCameraMan;
+    OgreBites::ParamsPanel *mDetailsPanel;
     bool mShutDown;
 
-    OIS::InputManager* mInputManager;
-    OIS::Mouse*    mMouse;
-    OIS::Keyboard* mKeyboard;
+    OIS::InputManager *mInputManager;
+    OIS::Mouse *mMouse;
+    OIS::Keyboard *mKeyboard;
 
-    Ogre::SceneNode* getNodeHit(int x, int y);
+    Ogre::SceneNode* getFirstNodeFromRay(int x, int y);
 
     // Ogre::FrameListener
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+    virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 
     // OIS::KeyListener
-    virtual bool keyPressed( const OIS::KeyEvent &arg );
-    virtual bool keyReleased( const OIS::KeyEvent &arg );
+    virtual bool keyPressed(const OIS::KeyEvent &arg);
+    virtual bool keyReleased(const OIS::KeyEvent &arg);
 
     // OIS::MouseListener
-    virtual bool mouseMoved( const OIS::MouseEvent &arg );
-    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    virtual bool mouseMoved(const OIS::MouseEvent &arg);
+    virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
 
     // Ogre::WindowEventListener
-    virtual void windowResized(Ogre::RenderWindow* rw);
-    virtual void windowClosed(Ogre::RenderWindow* rw);
+    virtual void windowResized(Ogre::RenderWindow *rw);
+    virtual void windowClosed(Ogre::RenderWindow *rw);
 
     Session *mSession;
 };

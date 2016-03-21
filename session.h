@@ -21,6 +21,8 @@
 #include <vector>
 #include <string>
 
+typedef std::vector<Spectrum*> SpecList;
+
 class Session
 {
 public:
@@ -28,7 +30,7 @@ public:
     ~Session();
 
     const Spectrum* getSpectrum(int idx) const;
-    const std::vector<Spectrum*> getSpectrums() const;
+    const SpecList getSpectrums() const;
 
     bool load(const std::string &session_path);
 
@@ -38,7 +40,7 @@ public:
 
 private:
 
-    std::vector<Spectrum*> mSpecList;
+    SpecList mSpecList;
 };
 
 #endif // SESSION_H
